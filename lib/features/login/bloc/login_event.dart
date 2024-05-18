@@ -16,6 +16,15 @@ class LoginUsernameChanged extends LoginEvent {
   List<Object> get props => [username];
 }
 
+class LoginPinCodeChanged extends LoginEvent {
+  const LoginPinCodeChanged(this.pinCode);
+
+  final String pinCode;
+
+  @override
+  List<Object> get props => [pinCode];
+}
+
 class LoginPasswordChanged extends LoginEvent {
   const LoginPasswordChanged(this.password);
 
@@ -27,4 +36,8 @@ class LoginPasswordChanged extends LoginEvent {
 
 class LoginSubmitted extends LoginEvent {
   const LoginSubmitted();
+}
+
+class PinSubmitted extends LoginEvent {
+  const PinSubmitted();
 }

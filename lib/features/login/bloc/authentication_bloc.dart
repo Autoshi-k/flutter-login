@@ -43,6 +43,8 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     switch (event.status) {
       case AuthenticationStatus.unauthenticated:
         return emit(const AuthenticationState.unauthenticated());
+      case AuthenticationStatus.pendingAuthentication:
+        return emit(const AuthenticationState.pendingAuthentication());
       case AuthenticationStatus.authenticated:
         final user = await _tryGetUser();
         return emit(

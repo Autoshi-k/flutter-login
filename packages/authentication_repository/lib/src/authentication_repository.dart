@@ -1,6 +1,7 @@
 import 'dart:async';
 
-enum AuthenticationStatus { unknown, authenticated, unauthenticated }
+enum AuthenticationStatus { unknown, authenticated, unauthenticated, pendingAuthentication }
+String _hardCodedPin = '12345';
 
 class AuthenticationRepository {
   final _controller = StreamController<AuthenticationStatus>();
@@ -17,7 +18,22 @@ class AuthenticationRepository {
   }) async {
     await Future.delayed(
       const Duration(milliseconds: 300),
-      () => _controller.add(AuthenticationStatus.authenticated),
+      () => _controller.add(AuthenticationStatus.pendingAuthentication),
+    );
+  }
+
+  Future<void> authenticatePhoneNumber({
+    required String pin
+  }) async {
+    await Future.delayed(
+      const Duration(milliseconds: 300),
+      () => {
+        if (pin == _hardCodedPin) {
+          _controller.add(AuthenticationStatus.authenticated)
+        } else {
+          _controller.add(AuthenticationStatus.unauthenticated)
+        }
+      },
     );
   }
 

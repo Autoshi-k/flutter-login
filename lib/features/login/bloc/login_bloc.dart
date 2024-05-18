@@ -1,4 +1,5 @@
 import 'package:authentication_repository/authentication_repository.dart';
+import 'package:basic_login/features/login/models/pin_code.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
@@ -16,7 +17,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         super(const LoginState()) {
     on<LoginUsernameChanged>(_onUsernameChanged);
     on<LoginPasswordChanged>(_onPasswordChanged);
+    on<LoginPinCodeChanged>(_onPinCodeChanged);
     on<LoginSubmitted>(_onSubmitted);
+    on<PinSubmitted>(_onPinSubmitted);
   }
 
   final AuthenticationRepository _authenticationRepository;
@@ -47,6 +50,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     );
   }
 
+  void _onPinCodeChanged(
+      LoginPinCodeChanged event,
+      Emitter<LoginState> emit,
+      ) {
+    final pinCode = PinCode.dirty(event.pinCode);
+    emit(
+      state.copyWith(
+        pinCode: pinCode,
+        isValid: Formz.validate([pinCode]),
+      ),
+    );
+  }
+
   Future<void> _onSubmitted(
       LoginSubmitted event,
       Emitter<LoginState> emit,
@@ -57,6 +73,23 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         await _authenticationRepository.logIn(
           username: state.username.value,
           password: state.password.value,
+        );
+        emit(state.copyWith(status: FormzSubmissionStatus.success));
+      } catch (_) {
+        emit(state.copyWith(status: FormzSubmissionStatus.failure));
+      }
+    }
+  }
+
+  Future<void> _onPinSubmitted(
+      PinSubmitted event,
+      Emitter<LoginState> emit,
+      ) async {
+    if (state.isValid) {
+      emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
+      try {
+        await _authenticationRepository.authenticatePhoneNumber(
+          pin: state.pinCode.value,
         );
         emit(state.copyWith(status: FormzSubmissionStatus.success));
       } catch (_) {

@@ -7,6 +7,7 @@ import 'package:user_repository/user_repository.dart';
 
 import 'features/home/view/home_page.dart';
 import 'features/login/bloc/authentication_bloc.dart';
+import 'features/login/view/auth_page.dart';
 import 'features/login/view/login_page.dart';
 
 class App extends StatefulWidget {
@@ -72,6 +73,12 @@ class _AppViewState extends State<AppView> {
                 _navigator.pushAndRemoveUntil<void>(
                   HomePage.route(),
                   (route) => false,
+                );
+                break;
+              case AuthenticationStatus.pendingAuthentication:
+                _navigator.pushAndRemoveUntil<void>(
+                  AuthPage.route(),
+                      (route) => false,
                 );
                 break;
               case AuthenticationStatus.unauthenticated:
